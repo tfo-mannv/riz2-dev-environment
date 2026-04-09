@@ -11,17 +11,21 @@ services:
       - php
   php:
     build: ./php
-    user: "1000:1000"
     volumes:
       - ${ADMIN_HOST_PATH}/backend/src/:/data/www/admin
       - ${CUSTOMER_HOST_PATH}/backend/src/:/data/www/customer
     working_dir: /data/www/admin
-    environment:
-      DB_MASTER_USER: root
-      DB_MASTER_PASSWORD: password
-      DB_APP_USER: hido
-      DB_APP_PASSWORD: password
-      REDIS_HOST: redis
+    links:
+      - mysql
+  worker:
+    build: ./worker
+    volumes:
+      - ${ADMIN_HOST_PATH}/backend/src/:/data/www/admin
+      - ${CUSTOMER_HOST_PATH}/backend/src/:/data/www/customer
+      - ./worker/supervisor.d:/etc/supervisor.d
+    working_dir: /data/www/admin
+    ports:
+      - 9001:9001
     links:
       - mysql
   mysql:

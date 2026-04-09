@@ -9,7 +9,17 @@ RUN set -x && \
   curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
 RUN mv composer.phar /usr/local/bin/composer
 
-VOLUME php.ini /usr/local/etc/php/php.ini
+ARG PUID=1000
+ARG PGID=1000
+ENV PGID=${PGID}
+ENV PUID=${PUID}
+
+RUN apk add --no-cache shadow && \
+    groupmod -g ${PGID} www-data && \
+    usermod -u ${PUID} -g www-data www-data && \
+    apk del shadow
+
+COPY php.ini /usr/local/etc/php/php.ini
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
-VOLUME supervisord-worker.ini /etc/supervisor.d/supervisord-worker.ini
-RUN mkdir -p /var/log/supervisor
+
+USER www-data
