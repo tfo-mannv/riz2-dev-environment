@@ -1,0 +1,2 @@
+* * * * * /usr/local/bin/php /data/www/admin/artisan schedule:run
+* * * * * /usr/local/bin/php /data/www/customer/artisan schedule:run
